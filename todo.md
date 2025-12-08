@@ -95,3 +95,30 @@
 - [ ] Test all API endpoints on Render (user action)
 - [ ] Monitor logs for errors (user action)
 
+
+
+## GitHub & Render Deployment Steps
+
+### GitHub Setup
+- [ ] Step 1: Create GitHub repository
+- [ ] Step 2: Copy repository URL
+- [ ] Step 3: Initialize git locally
+- [ ] Step 4: Push code to GitHub
+
+### Render Database Setup
+- [ ] Step 5: Create PostgreSQL database on Render
+- [ ] Step 6: Copy database connection string
+
+### Render Web Service Setup
+- [ ] Step 7: Create web service on Render
+- [ ] Step 8: Connect GitHub repository
+
+### Render Configuration
+- [ ] Step 9: Add environment variables
+- [ ] Step 10: Configure build and start commands
+
+### Deployment & Testing
+- [ ] Step 11: Deploy and monitor logs
+- [ ] Step 12: Run database migrations
+- [ ] Step 13: Test the live application
+
