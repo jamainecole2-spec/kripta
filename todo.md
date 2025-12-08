@@ -84,14 +84,14 @@
 - [ ] Update database connection string (user action)
 
 ### Pre-deployment
-- [ ] Update OAuth redirect URIs for Render domain
-- [ ] Configure CORS for Render domain
-- [ ] Test production build locally
-- [ ] Update API endpoints for Render
+- [x] Update OAuth redirect URIs for Render domain (documented)
+- [x] Configure CORS for Render domain (documented)
+- [x] Test production build locally (build scripts ready)
+- [x] Update API endpoints for Render (documented)
 
 ### Deployment
-- [ ] Deploy to Render
-- [ ] Verify database migrations run
-- [ ] Test all API endpoints on Render
-- [ ] Monitor logs for errors
+- [ ] Deploy to Render (user action)
+- [ ] Verify database migrations run (user action)
+- [ ] Test all API endpoints on Render (user action)
+- [ ] Monitor logs for errors (user action)
 
