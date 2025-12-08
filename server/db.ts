@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, wallets, marketData, cryptocurrencies, orders, transactions } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,87 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+/**
+ * Get user's wallet for a specific cryptocurrency
+ */
+export async function getUserWallet(userId: number, cryptoId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db
+    .select()
+    .from(wallets)
+    .where((w) => and(eq(w.userId, userId), eq(w.cryptoId, cryptoId)))
+    .limit(1);
+
+  return result.length > 0 ? result[0] : undefined;
+}
+
+/**
+ * Get all wallets for a user
+ */
+export async function getUserWallets(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db.select().from(wallets).where(eq(wallets.userId, userId));
+}
+
+/**
+ * Get market data for a cryptocurrency
+ */
+export async function getMarketData(cryptoId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db
+    .select()
+    .from(marketData)
+    .where(eq(marketData.cryptoId, cryptoId))
+    .limit(1);
+
+  return result.length > 0 ? result[0] : undefined;
+}
+
+/**
+ * Get all active cryptocurrencies
+ */
+export async function getActiveCryptocurrencies() {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(cryptocurrencies)
+    .where((c) => eq(c.isActive, 1));
+}
+
+/**
+ * Get user's orders
+ */
+export async function getUserOrders(userId: number, limit = 50) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(orders)
+    .where((o) => eq(o.userId, userId))
+    .orderBy((o) => o.createdAt)
+    .limit(limit);
+}
+
+/**
+ * Get user's transactions
+ */
+export async function getUserTransactions(userId: number, limit = 50) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(transactions)
+    .where((t) => eq(t.userId, userId))
+    .orderBy((t) => t.createdAt)
+    .limit(limit);
+}
