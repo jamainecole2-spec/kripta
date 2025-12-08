@@ -72,3 +72,26 @@
 - All features are legitimate and secure
 - Focus on user experience and performance
 - Real-time market data integration for accuracy
+
+
+## Render Deployment
+
+### Configuration
+- [x] Create render.yaml for infrastructure as code
+- [x] Configure build and start commands
+- [x] Set up environment variables for Render
+- [ ] Create PostgreSQL database on Render (user action)
+- [ ] Update database connection string (user action)
+
+### Pre-deployment
+- [ ] Update OAuth redirect URIs for Render domain
+- [ ] Configure CORS for Render domain
+- [ ] Test production build locally
+- [ ] Update API endpoints for Render
+
+### Deployment
+- [ ] Deploy to Render
+- [ ] Verify database migrations run
+- [ ] Test all API endpoints on Render
+- [ ] Monitor logs for errors
+
