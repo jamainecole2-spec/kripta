@@ -13,6 +13,7 @@ import {
 import { cryptocurrencies, wallets, orders, transactions, InsertWallet, InsertOrder, InsertTransaction } from "../drizzle/schema";
 import { eq, desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
+import emailService from "./services/emailService";
 
 export const appRouter = router({
   system: systemRouter,
@@ -377,6 +378,113 @@ export const appRouter = router({
         .orderBy(desc(transactions.createdAt))
         .limit(100);
     }),
+  }),
+
+  notifications: router({
+    sendOrderConfirmation: protectedProcedure
+      .input(z.object({
+        orderType: z.enum(["buy", "sell"]),
+        cryptocurrency: z.string(),
+        amount: z.number(),
+        price: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user.email) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "User email not found" });
+        }
+
+        const total = input.amount * input.price;
+        const success = await emailService.sendOrderConfirmation(ctx.user.email, {
+          userName: ctx.user.name || "User",
+          orderType: input.orderType,
+          cryptocurrency: input.cryptocurrency,
+          amount: input.amount,
+          price: input.price,
+          total,
+          orderId: `ORD-${Date.now()}`,
+          timestamp: new Date(),
+        });
+
+        return { success, message: success ? "Email sent successfully" : "Failed to send email" };
+      }),
+
+    sendDepositConfirmation: protectedProcedure
+      .input(z.object({
+        cryptocurrency: z.string(),
+        amount: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user.email) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "User email not found" });
+        }
+
+        const success = await emailService.sendDepositConfirmation(ctx.user.email, {
+          userName: ctx.user.name || "User",
+          cryptocurrency: input.cryptocurrency,
+          amount: input.amount,
+          transactionId: `DEP-${Date.now()}`,
+          timestamp: new Date(),
+        });
+
+        return { success, message: success ? "Confirmation email sent" : "Failed to send email" };
+      }),
+
+    sendWithdrawalConfirmation: protectedProcedure
+      .input(z.object({
+        cryptocurrency: z.string(),
+        amount: z.number(),
+        address: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user.email) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "User email not found" });
+        }
+
+        const success = await emailService.sendWithdrawalConfirmation(ctx.user.email, {
+          userName: ctx.user.name || "User",
+          cryptocurrency: input.cryptocurrency,
+          amount: input.amount,
+          address: input.address,
+          transactionId: `WTH-${Date.now()}`,
+          timestamp: new Date(),
+        });
+
+        return { success, message: success ? "Withdrawal confirmation email sent" : "Failed to send email" };
+      }),
+
+    sendPriceAlert: protectedProcedure
+      .input(z.object({
+        cryptocurrency: z.string(),
+        currentPrice: z.number(),
+        alertPrice: z.number(),
+        direction: z.enum(["above", "below"]),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user.email) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "User email not found" });
+        }
+
+        const success = await emailService.sendPriceAlert(ctx.user.email, {
+          userName: ctx.user.name || "User",
+          cryptocurrency: input.cryptocurrency,
+          currentPrice: input.currentPrice,
+          alertPrice: input.alertPrice,
+          direction: input.direction,
+        });
+
+        return { success, message: success ? "Price alert email sent" : "Failed to send email" };
+      }),
+
+    sendSecurityAlert: protectedProcedure
+      .input(z.object({ message: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user.email) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "User email not found" });
+        }
+
+        const success = await emailService.sendSecurityAlert(ctx.user.email, input.message);
+        return { success, message: success ? "Security alert sent" : "Failed to send email" };
+      }),
   }),
 });
 
