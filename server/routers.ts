@@ -14,6 +14,12 @@ import { cryptocurrencies, wallets, orders, transactions, InsertWallet, InsertOr
 import { eq, desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import emailService from "./services/emailService";
+import {
+  calculatePortfolioMetrics,
+  calculateTradePerformance,
+  getPortfolioValueHistory,
+  getTradingStatistics,
+} from "./services/analytics.service";
 
 export const appRouter = router({
   system: systemRouter,
@@ -485,6 +491,26 @@ export const appRouter = router({
         const success = await emailService.sendSecurityAlert(ctx.user.email, input.message);
         return { success, message: success ? "Security alert sent" : "Failed to send email" };
       }),
+  }),
+
+  analytics: router({
+    getPortfolioMetrics: protectedProcedure.query(async ({ ctx }) => {
+      return await calculatePortfolioMetrics(ctx.user.id);
+    }),
+
+    getTradePerformance: protectedProcedure.query(async ({ ctx }) => {
+      return await calculateTradePerformance(ctx.user.id);
+    }),
+
+    getPortfolioValueHistory: protectedProcedure
+      .input(z.object({ daysBack: z.number().default(30) }))
+      .query(async ({ ctx, input }) => {
+        return await getPortfolioValueHistory(ctx.user.id, input.daysBack);
+      }),
+
+    getTradingStatistics: protectedProcedure.query(async ({ ctx }) => {
+      return await getTradingStatistics(ctx.user.id);
+    }),
   }),
 });
 

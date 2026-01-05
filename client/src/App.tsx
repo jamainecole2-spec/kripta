@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Markets from "./pages/Markets";
 import Trading from "./pages/Trading";
 import Wallet from "./pages/Wallet";
+import Analytics from "./pages/Analytics";
 import { useAuth } from "./_core/hooks/useAuth";
 import { Button } from "./components/ui/button";
 import { Menu, X, LogOut } from "lucide-react";
@@ -32,6 +33,7 @@ function Navigation() {
             <a href="/markets" className="text-sm font-medium hover:text-primary transition-colors">Markets</a>
             <a href="/trading" className="text-sm font-medium hover:text-primary transition-colors">Trading</a>
             <a href="/wallet" className="text-sm font-medium hover:text-primary transition-colors">Wallet</a>
+            <a href="/analytics" className="text-sm font-medium hover:text-primary transition-colors">Analytics</a>
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -46,14 +48,15 @@ function Navigation() {
         </div>
       </div>
       {isOpen && (
-        <div className="md:hidden border-t bg-background">
-          <div className="container mx-auto px-4 py-4 space-y-2">
-            <a href="/" className="block py-2 text-sm font-medium hover:text-primary">Dashboard</a>
-            <a href="/markets" className="block py-2 text-sm font-medium hover:text-primary">Markets</a>
-            <a href="/trading" className="block py-2 text-sm font-medium hover:text-primary">Trading</a>
-            <a href="/wallet" className="block py-2 text-sm font-medium hover:text-primary">Wallet</a>
+          <div className="md:hidden border-t bg-background">
+            <div className="container mx-auto px-4 py-4 space-y-2">
+              <a href="/" className="block py-2 text-sm font-medium hover:text-primary">Dashboard</a>
+              <a href="/markets" className="block py-2 text-sm font-medium hover:text-primary">Markets</a>
+              <a href="/trading" className="block py-2 text-sm font-medium hover:text-primary">Trading</a>
+              <a href="/wallet" className="block py-2 text-sm font-medium hover:text-primary">Wallet</a>
+              <a href="/analytics" className="block py-2 text-sm font-medium hover:text-primary">Analytics</a>
+            </div>
           </div>
-        </div>
       )}
     </nav>
   );
@@ -71,6 +74,7 @@ function Router() {
           <Route path={"/markets"} component={isAuthenticated ? Markets : Home} />
           <Route path={"/trading"} component={isAuthenticated ? Trading : Home} />
           <Route path={"/wallet"} component={isAuthenticated ? Wallet : Home} />
+          <Route path={"/analytics"} component={isAuthenticated ? Analytics : Home} />
           <Route path={"/404"} component={NotFound} />
           {/* Final fallback route */}
           <Route component={NotFound} />
