@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ArrowDownLeft, ArrowUpRight, Copy, Check } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Copy, Check, Wallet as WalletIcon } from "lucide-react";
 import { formatCryptoAmount, formatCurrency } from "@/lib/utils";
 
 export default function Wallet() {
@@ -71,38 +71,52 @@ export default function Wallet() {
   };
 
   if (loadingWallets) {
-    return <Skeleton className="h-96 w-full" />;
+    return (
+      <div className="max-w-6xl mx-auto px-4 space-y-8">
+        <Skeleton className="h-40 w-full rounded-lg" />
+        <Skeleton className="h-96 w-full rounded-lg" />
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Wallet</h1>
-        <p className="text-muted-foreground">Manage your cryptocurrency assets</p>
+    <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+      {/* Header */}
+      <div className="text-center space-y-2 mb-8">
+        <h1 className="text-4xl font-bold">Wallet Management</h1>
+        <p className="text-muted-foreground text-lg">Deposit, withdraw, and manage your cryptocurrency assets</p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Deposit/Withdraw */}
+      {/* Main Content - Centered */}
+      <div className="grid gap-8 lg:grid-cols-3">
+        {/* Deposit/Withdraw Card - Centered and larger */}
         <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Deposit & Withdraw</CardTitle>
-              <CardDescription>Add or remove cryptocurrency from your wallet</CardDescription>
+          <Card className="border-2 shadow-lg">
+            <CardHeader className="border-b">
+              <CardTitle className="text-2xl">Deposit & Withdraw</CardTitle>
+              <CardDescription>Manage your cryptocurrency funds</CardDescription>
             </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="deposit">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="deposit">Deposit</TabsTrigger>
-                  <TabsTrigger value="withdraw">Withdraw</TabsTrigger>
+            <CardContent className="pt-6">
+              <Tabs defaultValue="deposit" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-6">
+                  <TabsTrigger value="deposit" className="gap-2">
+                    <ArrowDownLeft className="w-4 h-4" />
+                    Deposit
+                  </TabsTrigger>
+                  <TabsTrigger value="withdraw" className="gap-2">
+                    <ArrowUpRight className="w-4 h-4" />
+                    Withdraw
+                  </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="deposit" className="space-y-4 mt-4">
-                  <div className="space-y-2">
-                    <Label>Select Cryptocurrency</Label>
+                {/* Deposit Tab */}
+                <TabsContent value="deposit" className="space-y-6 mt-6">
+                  <div className="space-y-3">
+                    <Label className="text-base font-semibold">Select Cryptocurrency</Label>
                     <select
                       value={selectedCryptoId || ""}
                       onChange={(e) => setSelectedCryptoId(parseInt(e.target.value))}
-                      className="w-full px-3 py-2 border rounded-md bg-background"
+                      className="w-full px-4 py-3 border rounded-lg bg-background text-base focus:outline-none focus:ring-2 focus:ring-primary"
                     >
                       <option value="">Choose a cryptocurrency...</option>
                       {wallets?.map((wallet) => (
@@ -113,8 +127,8 @@ export default function Wallet() {
                     </select>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="deposit-amount">Amount</Label>
+                  <div className="space-y-3">
+                    <Label htmlFor="deposit-amount" className="text-base font-semibold">Amount</Label>
                     <Input
                       id="deposit-amount"
                       type="number"
@@ -122,45 +136,50 @@ export default function Wallet() {
                       value={depositAmount}
                       onChange={(e) => setDepositAmount(e.target.value)}
                       step="0.00000001"
+                      className="text-base py-3"
                     />
                   </div>
 
-                  <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
-                    <p className="text-sm text-muted-foreground mb-2">Deposit Address</p>
-                    <div className="flex items-center gap-2">
-                      <code className="text-xs bg-background p-2 rounded flex-1 overflow-auto">
+                  <div className="bg-blue-50 dark:bg-blue-950 p-6 rounded-lg space-y-3">
+                    <p className="text-sm font-semibold text-muted-foreground">Deposit Address</p>
+                    <div className="flex items-center gap-2 bg-background p-3 rounded">
+                      <code className="text-sm font-mono flex-1 overflow-auto">
                         1A1z7agoat2LWSS34CM78vRzoa5XPLAoS
                       </code>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => copyToClipboard("1A1z7agoat2LWSS34CM78vRzoa5XPLAoS")}
+                        className="shrink-0"
                       >
                         {copiedAddress ? (
-                          <Check className="w-4 h-4" />
+                          <Check className="w-4 h-4 text-green-600" />
                         ) : (
                           <Copy className="w-4 h-4" />
                         )}
                       </Button>
                     </div>
+                    <p className="text-xs text-muted-foreground">Send funds to this address to deposit</p>
                   </div>
 
                   <Button
                     onClick={handleDeposit}
                     disabled={isSubmitting || !selectedCryptoId || !depositAmount}
+                    size="lg"
                     className="w-full"
                   >
-                    {isSubmitting ? "Processing..." : "Deposit"}
+                    {isSubmitting ? "Processing..." : "Confirm Deposit"}
                   </Button>
                 </TabsContent>
 
-                <TabsContent value="withdraw" className="space-y-4 mt-4">
-                  <div className="space-y-2">
-                    <Label>Select Cryptocurrency</Label>
+                {/* Withdraw Tab */}
+                <TabsContent value="withdraw" className="space-y-6 mt-6">
+                  <div className="space-y-3">
+                    <Label className="text-base font-semibold">Select Cryptocurrency</Label>
                     <select
                       value={selectedCryptoId || ""}
                       onChange={(e) => setSelectedCryptoId(parseInt(e.target.value))}
-                      className="w-full px-3 py-2 border rounded-md bg-background"
+                      className="w-full px-4 py-3 border rounded-lg bg-background text-base focus:outline-none focus:ring-2 focus:ring-primary"
                     >
                       <option value="">Choose a cryptocurrency...</option>
                       {wallets?.map((wallet) => (
@@ -171,8 +190,8 @@ export default function Wallet() {
                     </select>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="withdraw-amount">Amount</Label>
+                  <div className="space-y-3">
+                    <Label htmlFor="withdraw-amount" className="text-base font-semibold">Amount</Label>
                     <Input
                       id="withdraw-amount"
                       type="number"
@@ -180,24 +199,27 @@ export default function Wallet() {
                       value={withdrawAmount}
                       onChange={(e) => setWithdrawAmount(e.target.value)}
                       step="0.00000001"
+                      className="text-base py-3"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="withdraw-address">Recipient Address</Label>
+                  <div className="space-y-3">
+                    <Label htmlFor="withdraw-address" className="text-base font-semibold">Recipient Address</Label>
                     <Input
                       id="withdraw-address"
-                      placeholder="Enter recipient address"
+                      placeholder="Enter recipient wallet address"
                       type="text"
+                      className="text-base py-3"
                     />
                   </div>
 
                   <Button
                     onClick={handleWithdraw}
                     disabled={isSubmitting || !selectedCryptoId || !withdrawAmount}
+                    size="lg"
                     className="w-full"
                   >
-                    {isSubmitting ? "Processing..." : "Withdraw"}
+                    {isSubmitting ? "Processing..." : "Confirm Withdrawal"}
                   </Button>
                 </TabsContent>
               </Tabs>
@@ -205,25 +227,35 @@ export default function Wallet() {
           </Card>
         </div>
 
-        {/* Wallet Summary */}
+        {/* Wallet Summary - Sidebar */}
         <div>
-          <Card>
-            <CardHeader>
-              <CardTitle>Wallet Summary</CardTitle>
+          <Card className="border-2 shadow-lg h-full">
+            <CardHeader className="border-b">
+              <CardTitle className="flex items-center gap-2">
+                <WalletIcon className="w-5 h-5" />
+                Wallet Summary
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="pt-6">
               {wallets && wallets.length > 0 ? (
-                wallets.map((wallet) => (
-                  <div key={wallet.id} className="border-b pb-4 last:border-b-0">
-                    <p className="text-sm text-muted-foreground">Crypto ID: {wallet.cryptoId}</p>
-                    <p className="text-lg font-semibold">{formatCryptoAmount(wallet.balance)}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Locked: {formatCryptoAmount(wallet.lockedBalance)}
-                    </p>
-                  </div>
-                ))
+                <div className="space-y-4">
+                  {wallets.map((wallet) => (
+                    <div key={wallet.id} className="p-4 bg-muted rounded-lg space-y-2">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase">Crypto ID: {wallet.cryptoId}</p>
+                      <p className="text-xl font-bold">{formatCryptoAmount(wallet.balance)}</p>
+                      <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t">
+                        <p>Locked: {formatCryptoAmount(wallet.lockedBalance)}</p>
+                        <p>Available: {formatCryptoAmount((parseFloat(wallet.balance) - parseFloat(wallet.lockedBalance)).toString())}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               ) : (
-                <p className="text-sm text-muted-foreground">No wallets yet</p>
+                <div className="text-center py-8">
+                  <WalletIcon className="w-12 h-12 mx-auto text-muted-foreground opacity-50 mb-3" />
+                  <p className="text-sm text-muted-foreground">No wallets yet</p>
+                  <p className="text-xs text-muted-foreground mt-1">Create your first wallet by depositing</p>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -232,41 +264,62 @@ export default function Wallet() {
 
       {/* Transaction History */}
       <Card>
-        <CardHeader>
-          <CardTitle>Transaction History</CardTitle>
-          <CardDescription>Your recent transactions</CardDescription>
+        <CardHeader className="border-b">
+          <CardTitle className="text-2xl">Transaction History</CardTitle>
+          <CardDescription>Your recent cryptocurrency transactions</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           {loadingTransactions ? (
-            <Skeleton className="h-32 w-full" />
+            <Skeleton className="h-40 w-full rounded-lg" />
           ) : transactions && transactions.length > 0 ? (
-            <div className="space-y-2">
-              {transactions.slice(0, 10).map((tx) => (
-                <div key={tx.id} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    {tx.transactionType === "deposit" ? (
-                      <ArrowDownLeft className="w-5 h-5 text-green-600" />
-                    ) : (
-                      <ArrowUpRight className="w-5 h-5 text-red-600" />
-                    )}
-                    <div>
-                      <p className="font-semibold capitalize">{tx.transactionType}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(tx.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold">{formatCryptoAmount(tx.amount)}</p>
-                    <p className={`text-xs ${tx.status === "completed" ? "text-green-600" : "text-yellow-600"}`}>
-                      {tx.status}
-                    </p>
-                  </div>
-                </div>
-              ))}
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-3 px-4 font-semibold">Type</th>
+                    <th className="text-left py-3 px-4 font-semibold">Amount</th>
+                    <th className="text-left py-3 px-4 font-semibold">Status</th>
+                    <th className="text-left py-3 px-4 font-semibold">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transactions.slice(0, 15).map((tx) => (
+                    <tr key={tx.id} className="border-b hover:bg-muted/50 transition-colors">
+                      <td className="py-4 px-4">
+                        <div className="flex items-center gap-3">
+                          {tx.transactionType === "deposit" ? (
+                            <ArrowDownLeft className="w-5 h-5 text-green-600" />
+                          ) : (
+                            <ArrowUpRight className="w-5 h-5 text-red-600" />
+                          )}
+                          <span className="font-semibold capitalize">{tx.transactionType}</span>
+                        </div>
+                      </td>
+                      <td className="py-4 px-4 font-semibold">{formatCryptoAmount(tx.amount)}</td>
+                      <td className="py-4 px-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          tx.status === "completed" 
+                            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                            : tx.status === "pending"
+                            ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                            : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                        }`}>
+                          {tx.status}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-muted-foreground text-sm">
+                        {new Date(tx.createdAt).toLocaleDateString()} {new Date(tx.createdAt).toLocaleTimeString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : (
-            <p className="text-center py-8 text-muted-foreground">No transactions yet</p>
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No transactions yet</p>
+              <p className="text-sm text-muted-foreground mt-1">Your transaction history will appear here</p>
+            </div>
           )}
         </CardContent>
       </Card>
